@@ -1,3 +1,4 @@
 creds.py
 __pycache__
 analysis/data/__pycache__
+.env
