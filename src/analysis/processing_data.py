@@ -7,6 +7,3 @@ def get_news_df():
     sorted_news = get_sorted_news()
     df = pd.DataFrame(sorted_news.items(), columns=["title", "content"])
     return df
-
-
-get_news_df()

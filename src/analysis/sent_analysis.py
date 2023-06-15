@@ -14,9 +14,13 @@ def get_sentiment_score(sentence):
 
 def get_sentiment_df():
     df = get_news_df()
-    df["sentiment_score"] = df["content"].fillna(df["title"]).apply(get_sentiment_score)
-    print(df.head(5))
+    df["sentiment_score"] = df["content"].apply(get_sentiment_score)
     return df
+    
 
-
-get_sentiment_df()
+def score_zero():
+    df = get_sentiment_df()
+    nil_df = df[df['sentiment_score'] == 0]
+    print('Number of articles with sentiment score 0: ', len(nil_df))
+    print(nil_df)
+    return df

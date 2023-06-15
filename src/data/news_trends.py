@@ -1,4 +1,4 @@
-from src.news_api import api
+from src.api.news_api import api
 
 
 def get_sorted_news():
@@ -10,7 +10,7 @@ def get_sorted_news():
 
     for article in articles:
         title = article["title"]
-        content = article["content"]
+        content = article.get("description", article["title"])
         sorted_news[title] = content
 
     return sorted_news
