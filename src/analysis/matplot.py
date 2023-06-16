@@ -12,12 +12,12 @@ def plot_sentiment():
     x = df.index
     y = df['sentiment_score']
 
-    fig, ax = plt.subplots()
+    fig, axes = plt.subplots()
     
-    ax.set_title('Sentiment Analysis', fontsize=14)
-    ax.scatter(x, y, c=y, cmap='plasma')
-    ax.set_facecolor("white")
-    ax.plot(df['sentiment_score'])
+    axes.set_title('Sentiment Analysis', fontsize=14)
+    axes.scatter(x, y, c=y, cmap='plasma')
+    axes.set_facecolor("white")
+    axes.plot(df['sentiment_score'])
     
     cmap = plt.get_cmap('plasma',20)
     norm = mpl.colors.Normalize(vmin=0,vmax=2)
