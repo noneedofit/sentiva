@@ -19,7 +19,7 @@ def plot_sentiment():
     ax.set_facecolor("white")
     ax.plot(df['sentiment_score'])
     
-    cmap = plt.get_cmap('plasma',10)
+    cmap = plt.get_cmap('plasma',20)
     norm = mpl.colors.Normalize(vmin=0,vmax=2)
     sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
     sm.set_array([])
