@@ -10,7 +10,7 @@ def get_sorted_news():
 
     for article in articles:
         title = article["title"]
-        content = article.get("description", article["title"])
+        content = article.get("content", article["title"])
         sorted_news[title] = content
 
     return sorted_news
