@@ -1,0 +1,2 @@
+from api folder -> 'top_headlines.py' and 'category_news.py', the category is decided by running 'news_categoriser.py' inside 'category_news.py'
+from data folder -> analysis folder
