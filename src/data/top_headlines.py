@@ -10,7 +10,10 @@ def get_sorted_top_headlines():
 
     for article in articles:
         title = article["title"]
-        content = article.get("content", title)
+        content = article.get("content")
+        if not content or len(content.split()) < 5:
+           content = title
+
     
         sorted_news.append({
            "title": title,

@@ -1,19 +1,6 @@
-# lists of words that are associated with each category
-
-politics = ['politics', 'government', 'election', 'policy']
-sports = ['sports', 'athletics', 'competition']
-entertainment = ['entertainment', 'celebrities', 'movies', 'music']
-technology = ['technology', 'computers', 'innovation']
-health = ['health', 'medical', 'medicine']
-business = ['business', 'economy', 'finance']
-environment = ['environment', 'climate', 'nature']
-science = ['science', 'research', 'discovery', 'study', 'scientists', 'scientist', 'space', 'physics', 'chemistry', 'biology', 'astronomy', 'astronomers', 'astronomer', 'mathematics', 'mathematicians', 'mathematician', 'geology', 'geologists', 'geologist', 'geography', 'geographers', 'geographer', 'engineering', 'engineers', 'engineer', 'technology', 'technologists', 'technologist', 'astrophysics']
-education = ['education', 'school', 'learning']
-weather = ['weather', 'forecast', 'climate']
-
+from src.data.word_lists import politics, sports, entertainment, technology, science, health, business, environment, education, weather
 
 # a dictionary mapping each category to its list of words
-
 categories = {
     'politics': politics, 'sports': sports, 'entertainment': entertainment, 'technology': technology, 'science': science,
     'health': health, 'business': business, 'environment': environment, 'education': education, 'weather': weather,
@@ -22,7 +9,6 @@ categories = {
 def categorise_news(article):
 
     # if the article field is empty, return None to avoid errors
-
     if article is None:
         return None
 

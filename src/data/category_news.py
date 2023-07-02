@@ -17,7 +17,9 @@ def get_categorised_news():
 
         for article in articles:
             title = article["title"]
-            content = article.get("content", title)
+            content = article.get("content")
+            if not content or len(content.split()) < 5:
+               content = title
             topic = categorise_news(content)
 
             sorted_categorised_news.append({
