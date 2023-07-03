@@ -2,6 +2,7 @@ from src.data.top_headlines import get_sorted_top_headlines
 from src.data.category_news import get_categorised_news
 from src.data.news_dataframe import get_top_headlines_df, get_categorised_news_df
 from src.analysis.sent_analysis import get_sentiment_df, count_zero_sentiment, update_zero_sentiment
+from src.analysis.sent_plots import plot_sentiment
 import time
 
 def print_status(text, status):
@@ -43,10 +44,10 @@ def main(df_stats=False, updated_stats=False):
         # plot sentiment scores
         print_status('Visualising our data..', '🟡')
         time.sleep(1)
-        '''
-        plot_sentiment(top_headlines_df, "Trending News")
-        plot_sentiment(categorised_news_df, "Categorised News")
-        '''
+        
+        plot_sentiment(top_headlines_df)
+        plot_sentiment(categorised_news_df)
+        
         print_status('Visualisation DONE', '✅')
 
     except Exception as e:
