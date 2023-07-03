@@ -96,10 +96,11 @@ if __name__ == "__main__":
     # ask user if they want to print dataframe stats
     while True:
         df_choice_input = input('Do you want ORIGINAL news dataframe stats? (True/False): ')
-        if df_choice_input.lower() == 'true':
+        df_choice_input = df_choice_input.lower()
+        if df_choice_input in ['true', 't']:
             df_choice = True
             break
-        elif df_choice_input.lower() == 'false':
+        elif df_choice_input in ['false', 'f']:
             df_choice = False
             break
         else:
@@ -108,10 +109,11 @@ if __name__ == "__main__":
     # ask user if they want to print UPDATED dataframe stats
     while True:
         updated_choice_input = input('Do you want UPDATED news dataframe stats? (True/False): ')
-        if updated_choice_input.lower() == 'true':
+        updated_choice_input = updated_choice_input.lower()
+        if updated_choice_input in ['true', 't']:
             updated_choice = True
             break
-        elif updated_choice_input.lower() == 'false':
+        elif updated_choice_input in ['false', 'f']:
             updated_choice = False
             break
         else:
