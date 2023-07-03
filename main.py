@@ -11,7 +11,7 @@ def print_error(text, error):
     print(f"{text.ljust(45)} ERROR: {error}")
 
 def main(df_stats=False, updated_stats=False):
-   try:
+    try:
         # get data from API
         print_status('Getting articles from the API..', '🟡')
         time.sleep(1)
@@ -19,14 +19,14 @@ def main(df_stats=False, updated_stats=False):
         categorised_news = get_categorised_news()
         print_status('Fetching DONE', '✅')
 
-        # get dataframes from data 
+        # get dataframes from data
         print_status('Making dataframes for the articles..', '🟡')
         time.sleep(1)
         top_headlines_df = get_top_headlines_df(sorted_news)
         categorised_news_df = get_categorised_news_df(categorised_news)
         print_status('Dataframes MADE', '✅')
 
-        # get sentiment scores for each article 
+        # get sentiment scores for each article
         print_status('Applying sentiment analysis on the articles..', '🟡')
         time.sleep(1)
         top_headlines_df = get_sentiment_df(top_headlines_df)
@@ -49,39 +49,72 @@ def main(df_stats=False, updated_stats=False):
         '''
         print_status('Visualisation DONE', '✅')
 
-   except Exception as e:
+    except Exception as e:
         print_error('An error occurred:', str(e))
 
-        if df_stats:
-           # dataframes sizes
-           print('Number of articles in TOP HEADLINES dataframe: ', top_headlines_df.size)
-           print('Number of articles in CATEGORISED news dataframe: ', categorised_news_df.size)
-        
-           print('Number of TRENDING articles with ZERO in sentiment score: ', count_zero_sentiment(top_headlines_df).size)
-           print('Number of CATEGORISED articles with ZERO in sentiment score: ', count_zero_sentiment(categorised_news_df).size)
+    if df_stats:
+        try:
+            # dataframes sizes
+            print('Number of articles in TOP HEADLINES dataframe: ', top_headlines_df.size)
+            print('Number of articles in CATEGORISED news dataframe: ', categorised_news_df.size)
 
-           # print dataframes
-           print('TOP HEADLINES dataframe: ')
-           print(top_headlines_df.head(10))
+            print('Number of TRENDING articles with ZERO in sentiment score: ', count_zero_sentiment(top_headlines_df).size)
+            print('Number of CATEGORISED articles with ZERO in sentiment score: ', count_zero_sentiment(categorised_news_df).size)
 
-           print('CATEGORISED news dataframe: ')
-           print(categorised_news_df.head(10))
+            # print dataframes
+            print('TOP HEADLINES dataframe: ')
+            print(top_headlines_df.head(10))
 
-        elif updated_stats:
-           # updated 0 -> non zero scores df and also retrieve the no. of records updated in each df
-           updated_top_headlines_df, updated_top_count = update_zero_sentiment(top_headlines_df, True, True)
-           updated_categorised_news_df, updated_categorised_count = update_zero_sentiment(categorised_news_df, True, True)
+            print('CATEGORISED news dataframe: ')
+            print(categorised_news_df.head(10))
+        except Exception as e:
+            print_error('An error occurred while printing dataframe stats:', str(e))
 
-           # print no. of updated records 
-           print('No. of records updated in TOP HEADLINES dataframe: ', updated_top_count)
-           print('No. of records updated in CATEGORISED news dataframe: ', updated_categorised_count)
-           print('TOTAL NO. OF RECORDS UPDATED with ZERO score: ', updated_top_count + updated_categorised_count)
+    elif updated_stats:
+        try:
+            # updated 0 -> non zero scores df and also retrieve the no. of records updated in each df
+            updated_top_headlines_df, updated_top_count = update_zero_sentiment(top_headlines_df, True, True)
+            updated_categorised_news_df, updated_categorised_count = update_zero_sentiment(categorised_news_df, True, True)
 
-           print('UPDATED TOP HEADLINES dataframe: ')
-           print(updated_top_headlines_df.head(15))
+            # print no. of updated records
+            print('No. of records updated in TOP HEADLINES dataframe: ', updated_top_count)
+            print('No. of records updated in CATEGORISED news dataframe: ', updated_categorised_count)
+            print('TOTAL NO. OF RECORDS UPDATED with ZERO score: ', updated_top_count + updated_categorised_count)
 
-           print('UPDATED CATEGORISED news dataframe: ')
-           print(updated_categorised_news_df.head(15))
+            print('UPDATED TOP HEADLINES dataframe: ')
+            print(updated_top_headlines_df.head(15))
+
+            print('UPDATED CATEGORISED news dataframe: ')
+            print(updated_categorised_news_df.head(15))
+        except Exception as e:
+            print_error('An error occurred while printing updated dataframe stats:', str(e))
+
 
 if __name__ == "__main__":
-    main()
+    print('Running main.py.. ✨')
+
+    # ask user if they want to print dataframe stats
+    while True:
+        df_choice_input = input('Do you want ORIGINAL news dataframe stats? (True/False): ')
+        if df_choice_input.lower() == 'true':
+            df_choice = True
+            break
+        elif df_choice_input.lower() == 'false':
+            df_choice = False
+            break
+        else:
+            print('Invalid input. Please enter either "True" or "False".')
+
+    # ask user if they want to print UPDATED dataframe stats
+    while True:
+        updated_choice_input = input('Do you want UPDATED news dataframe stats? (True/False): ')
+        if updated_choice_input.lower() == 'true':
+            updated_choice = True
+            break
+        elif updated_choice_input.lower() == 'false':
+            updated_choice = False
+            break
+        else:
+            print('Invalid input. Please enter either "True" or "False".')
+
+    main(df_stats=df_choice, updated_stats=updated_choice)
