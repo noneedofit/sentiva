@@ -1,41 +1,74 @@
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import numpy as np
+import matplotlib.gridspec as gridspec
+
 
 def generate_z_values(x, y):
-    # Generate z values based on x and y coordinates
     z = np.sin(x) * np.cos(y)
     return z
 
-def plot_sentiment(df):
-    df = df.sort_values('sentiment_score', ascending=True)
-    df = df.reset_index(drop=True)
-    x = df.index
-    y = df['sentiment_score']
-    X, Y = np.meshgrid(x, y)
-    z = generate_z_values(X, Y)
 
-    fig = plt.figure()
-    ax_scatter = fig.add_subplot(121)
-    ax_heatmap = fig.add_subplot(122, projection='3d')
-    ax_cbar = fig.add_axes([0.92, 0.1, 0.02, 0.8])  # Colorbar axes position
+def add_colorbar(fig, cmap, z_values):
+    cbar_axes = fig.add_axes([0.92, 0.1, 0.02, 0.8]) 
+    norm = mpl.colors.Normalize(vmin=np.min(z_values), vmax=np.max(z_values))
+    scalar_mappable = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+    scalar_mappable.set_array(z_values)
+    colorbar = plt.colorbar(scalar_mappable, cax=cbar_axes, ticks=np.linspace(np.min(z_values), np.max(z_values), 5),
+                            boundaries=np.linspace(np.min(z_values), np.max(z_values), 10))
 
-    ax_scatter.set_title('Sentiment Analysis (Scatter Plot)', fontsize=14)
-    ax_scatter.scatter(x, y, c=y, cmap='plasma')
-    ax_scatter.set_xlabel('Index')
-    ax_scatter.set_ylabel('Sentiment Score')
 
-    ax_heatmap.set_title('Sentiment Analysis (3D Heatmap)', fontsize=14)
-    ax_heatmap.plot_surface(X, Y, z, cmap='plasma', edgecolor='none')
-    ax_heatmap.set_xlabel('Index')
-    ax_heatmap.set_ylabel('Sentiment Score')
-    ax_heatmap.set_zlabel('Value')  # Set a string as the z-label
+def scatter_plot(*dataframes):
+    num_subplots = len(dataframes)
+    fig = plt.figure(figsize=(8 + num_subplots, 4))
+    grid_spec = gridspec.GridSpec(1, num_subplots + 1, width_ratios=[1] * num_subplots + [0.05])
+    colormap = plt.get_cmap('viridis')
 
-    cmap = plt.get_cmap('plasma')
-    norm = mpl.colors.Normalize(vmin=np.min(z), vmax=np.max(z))
-    sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
-    sm.set_array([])
-    colorbar = plt.colorbar(sm, cax=ax_cbar, ticks=np.linspace(-1, 1, 5), boundaries=np.linspace(-1, 1, 10))
+    for i, df in enumerate(dataframes):
+        df = df[df['sentiment_score'] != 0]
+        df = df.reset_index(drop=True)
 
-    
+        x = df.index
+        y = df['sentiment_score']
+        X, Y = np.meshgrid(x, y)
+        z_values = generate_z_values(X, Y)
+
+        subplot = fig.add_subplot(grid_spec[0, i])
+        subplot.set_title('Sentiments Scattered', fontsize=14)
+        subplot.scatter(x, y, c=y, cmap=colormap)
+        subplot.set_xlabel('Index')
+        subplot.set_ylabel('Sentiment Score')
+        subplot.set_facecolor('#F0F0F0')
+        subplot.axhline(0, color='black', linestyle='dotted')
+
+    add_colorbar(fig, colormap, z_values)
+    plt.tight_layout()
+    plt.show()
+
+
+def heatmap_plot(*dataframes):
+    num_subplots = len(dataframes)
+    fig = plt.figure(figsize=(8 + num_subplots, 4))
+    grid_spec = gridspec.GridSpec(1, num_subplots + 1, width_ratios=[1] * num_subplots + [0.05])
+    colormap = plt.get_cmap('plasma')
+
+    for i, df in enumerate(dataframes):
+        df = df[df['sentiment_score'] != 0]
+        df = df.reset_index(drop=True)
+
+        x = df.index
+        y = df['sentiment_score']
+        X, Y = np.meshgrid(x, y)
+        Z = generate_z_values(X, Y)
+
+        subplot = fig.add_subplot(grid_spec[0, i], projection='3d')
+        subplot.set_title('Sentiments Heatmapped', fontsize=14)
+        subplot.plot_surface(X, Y, Z, cmap=colormap, edgecolor='none')
+        subplot.set_xlabel('Index')
+        subplot.set_ylabel('Sentiment Score')
+        subplot.set_zlabel('Value')
+
+    add_colorbar(fig, colormap, Z)
+
+    plt.tight_layout()
     plt.show()

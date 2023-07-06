@@ -6,5 +6,5 @@ def get_top_headlines_df(sorted_news):
 
 
 def get_categorised_news_df(categorised_news):
-    df = pd.DataFrame(categorised_news, columns=["title", "content", "topic"])
+    df = pd.DataFrame(categorised_news, columns=["title", "content", "category"])
     return df

@@ -20,12 +20,17 @@ def get_categorised_news():
             content = article.get("content")
             if not content or len(content.split()) < 5:
                content = title
-            topic = categorise_news(content)
+            category = categorise_news(content)
+
+            # temporary fix for articles with no category
+            import numpy as np
+            if category is None or category == np.nan or category == "":
+                category = np.random.choice(categories)
 
             sorted_categorised_news.append({
                "title": title,
                "content": content,
-               "topic": topic
+               "category": category
             })
 
     return sorted_categorised_news

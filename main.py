@@ -2,7 +2,7 @@ from src.data.top_headlines import get_sorted_top_headlines
 from src.data.category_news import get_categorised_news
 from src.data.news_dataframe import get_top_headlines_df, get_categorised_news_df
 from src.analysis.sent_analysis import get_sentiment_df, count_zero_sentiment, update_zero_sentiment
-from src.analysis.sent_plots import plot_sentiment
+from src.analysis.sent_plots import scatter_plot, heatmap_plot
 import time
 
 def print_status(text, status):
@@ -11,7 +11,7 @@ def print_status(text, status):
 def print_error(text, error):
     print(f"{text.ljust(45)} ERROR: {error}")
 
-def main(df_stats=False, updated_stats=False):
+def fetch_analyse():
     try:
         # get data from API
         print_status('Getting articles from the API..', '🟡')
@@ -41,83 +41,79 @@ def main(df_stats=False, updated_stats=False):
         categorised_news_df = update_zero_sentiment(categorised_news_df)
         print_status('Records UPDATED', '✅')
 
-        # plot sentiment scores
-        print_status('Visualising our data..', '🟡')
-        time.sleep(1)
-        
-        plot_sentiment(top_headlines_df)
-        plot_sentiment(categorised_news_df)
-        
-        print_status('Visualisation DONE', '✅')
+        return top_headlines_df, categorised_news_df
 
     except Exception as e:
         print_error('An error occurred:', str(e))
 
-    if df_stats:
-        try:
-            # dataframes sizes
-            print('Number of articles in TOP HEADLINES dataframe: ', top_headlines_df.size)
-            print('Number of articles in CATEGORISED news dataframe: ', categorised_news_df.size)
 
-            print('Number of TRENDING articles with ZERO in sentiment score: ', count_zero_sentiment(top_headlines_df).size)
-            print('Number of CATEGORISED articles with ZERO in sentiment score: ', count_zero_sentiment(categorised_news_df).size)
+def visualize(*dataframes):
+    try:
+        print_status('Visualising our data..', '🟡')
+        time.sleep(1)
+        scatter_plot(*dataframes)
+        heatmap_plot(*dataframes)
+        print_status('Visualisation DONE', '✅')
+    except Exception as e:
+        print_error('An error occurred while visualizing data:', str(e))
 
-            # print dataframes
-            print('TOP HEADLINES dataframe: ')
-            print(top_headlines_df.head(10))
 
-            print('CATEGORISED news dataframe: ')
-            print(categorised_news_df.head(10))
-        except Exception as e:
-            print_error('An error occurred while printing dataframe stats:', str(e))
+def stats(*dataframes):
+    try:
+        for df in dataframes:
+            df_name = df.__class__.__name__.split("_")[0]
+            df, count = update_zero_sentiment(df, True)
+            print(f"{df_name.capitalize()} stats:")
+            print('Number of articles in the dataframe:', df.size)
+            print('Number of articles with ZERO sentiment score:', count_zero_sentiment(df).size)
+            print('Number of articles with UPDATED (from 0) sentiment score:', count)
+            print()
+    except Exception as e:
+        print_error('An error occurred while printing dataframe stats:', str(e))
 
-    elif updated_stats:
-        try:
-            # updated 0 -> non zero scores df and also retrieve the no. of records updated in each df
-            updated_top_headlines_df, updated_top_count = update_zero_sentiment(top_headlines_df, True, True)
-            updated_categorised_news_df, updated_categorised_count = update_zero_sentiment(categorised_news_df, True, True)
 
-            # print no. of updated records
-            print('No. of records updated in TOP HEADLINES dataframe: ', updated_top_count)
-            print('No. of records updated in CATEGORISED news dataframe: ', updated_categorised_count)
-            print('TOTAL NO. OF RECORDS UPDATED with ZERO score: ', updated_top_count + updated_categorised_count)
-
-            print('UPDATED TOP HEADLINES dataframe: ')
-            print(updated_top_headlines_df.head(15))
-
-            print('UPDATED CATEGORISED news dataframe: ')
-            print(updated_categorised_news_df.head(15))
-        except Exception as e:
-            print_error('An error occurred while printing updated dataframe stats:', str(e))
-
+def print_dataframe_records(df, n_head):
+    if df is not None:
+        df_name = df.__class__.__name__.split("_")[0]
+        print(f"{df_name.capitalize()} ({n_head} articles):")
+        print(df.head(n_head))
 
 if __name__ == "__main__":
     print('Running main.py.. ✨')
+    print()
 
-    # ask user if they want to print dataframe stats
-    while True:
-        df_choice_input = input('Do you want ORIGINAL news dataframe stats? (T/F): ')
-        df_choice_input = df_choice_input.lower()
-        if df_choice_input in ['true', 't']:
-            df_choice = True
-            break
-        elif df_choice_input in ['false', 'f']:
-            df_choice = False
-            break
+    fetch_analyse_choice = input('Do you want to fetch and analyze data? (Y/N): ')
+    fetch_analyse_choice = fetch_analyse_choice.lower() == 'y'
+
+    visualize_choice = input('Do you want to visualize data? (Y/N): ')
+    visualize_choice = visualize_choice.lower() == 'y'
+
+    stats_choice = input('Do you want to print dataframe stats? (Y/N): ')
+    stats_choice = stats_choice.lower() == 'y'
+
+    n_head = None
+    print_articles_choice = input('Do you want to print the articles? (Y/N): ')
+    print_articles_choice = print_articles_choice.lower() == 'y'
+    if print_articles_choice:
+        n_head = int(input('Enter the number of articles to print: '))
+
+    if fetch_analyse_choice:
+        top_headlines_df, categorised_news_df = fetch_analyse()
+    else:
+        top_headlines_df, categorised_news_df = None, None
+
+    if visualize_choice:
+        if top_headlines_df is not None or categorised_news_df is not None:
+            visualize(top_headlines_df, categorised_news_df)
         else:
-            print('Invalid input. Please enter either "True" or "False".')
-
-    # ask user if they want to print UPDATED dataframe stats
-    while True:
-        updated_choice_input = input('Do you want UPDATED news dataframe stats? (T/F): ')
-        updated_choice_input = updated_choice_input.lower()
-        if updated_choice_input in ['true', 't']:
-            updated_choice = True
-            break
-        elif updated_choice_input in ['false', 'f']:
-            updated_choice = False
-            break
+            print_error('Dataframes not available for visualization.', '')
+    
+    if stats_choice:
+        if top_headlines_df is not None or categorised_news_df is not None:
+            stats(top_headlines_df, categorised_news_df)
         else:
-            print('Invalid input. Please enter either "True" or "False".')
+            print_error('Dataframes not available for printing stats.', '')
 
-    main(df_stats=df_choice, updated_stats=updated_choice)
+    if print_articles_choice:
+        print_dataframe_records(top_headlines_df, n_head)
+        print_dataframe_records(categorised_news_df, n_head)
