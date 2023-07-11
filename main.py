@@ -79,8 +79,8 @@ def print_dataframe_records(df, n_head):
         print(df.head(n_head))
 
 if __name__ == "__main__":
-    print('Running main.py.. ✨')
     print()
+    print('Running main.py.. ✨')
 
     fetch_analyse_choice = input('Do you want to fetch and analyze data? (Y/N): ')
     fetch_analyse_choice = fetch_analyse_choice.lower() == 'y'
